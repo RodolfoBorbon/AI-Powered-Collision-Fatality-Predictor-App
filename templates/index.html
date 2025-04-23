@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toronto Police Service Application</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #032146;
+        }
+        h1 {
+            color: #ffffffe4;
+            text-align: center;
+            padding: 20px 0;
+        }
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: flex-start;
+            width: 50%;
+            margin: 20px auto;
+            background-color: #fdfeff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            flex: 1 1 45%; 
+            margin: 10px;
+            min-width: 300px;
+        }
+        label {
+            display: block;
+            color: #000000;
+            font-size: 14px;
+            margin-bottom: 2px;
+            font-weight: 700;
+        }
+        select, input[type="text"], button {
+            width: 100%;
+            height: 40px;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background-color: #f7f7f4;
+        }
+        button {
+            background-color: #032146;
+            color: rgb(234, 234, 227);
+            cursor: pointer;
+            font-size: 20px;
+            margin-top: 20px;
+            height: 10%;
+        }
+        button:hover {
+            opacity: 0.9;
+            background-color: #b4a828;
+        }
+        #map {
+            width: 100%;
+            height: 400px;
+            grid-column: 1 / -1; 
+        }
+    </style>
+    <!-- Google Maps JavaScript API -->
+    <script>
+        (function(g) {
+            let scriptLoaded;
+    
+            async function loadGoogleMapsAPI() {
+                if (scriptLoaded) return;
+                scriptLoaded = true;
+    
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${g.key}&callback=initMap&v=${g.v}&libraries=&region=`;
+                script.async = true;
+                script.defer = true;
+                document.head.appendChild(script);
+            }
+    
+            loadGoogleMapsAPI();
+    
+            window.initMap = async function() {
+                const toronto = { lat: 43.651070, lng: -79.347015 };
+                const map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 10,
+                    center: toronto
+                });
+    
+                const marker = new google.maps.Marker({
+                    position: toronto,
+                    map: map,
+                    draggable: true
+                });
+    
+                // Listen for map clicks to update input fields
+                map.addListener('click', function(e) {
+                    marker.setPosition(e.latLng);
+                    updateLatLngInputs(e.latLng.lat(), e.latLng.lng());
+                });
+    
+                // Listen for marker drag ends to update input fields
+                marker.addListener('dragend', function() {
+                    const pos = marker.getPosition();
+                    updateLatLngInputs(pos.lat(), pos.lng());
+                });
+    
+                // Update map marker when latitude or longitude input fields lose focus
+                document.getElementById('latitude').addEventListener('change', function() {
+                    const newLat = parseFloat(this.value);
+                    const newLng = parseFloat(document.getElementById('longitude').value);
+                    const newPos = { lat: newLat, lng: newLng };
+                    marker.setPosition(newPos);
+                    map.setCenter(newPos);
+                });
+    
+                document.getElementById('longitude').addEventListener('change', function() {
+                    const newLng = parseFloat(this.value);
+                    const newLat = parseFloat(document.getElementById('latitude').value);
+                    const newPos = { lat: newLat, lng: newLng };
+                    marker.setPosition(newPos);
+                    map.setCenter(newPos);
+                });
+    
+                function updateLatLngInputs(lat, lng) {
+                    document.getElementById('latitude').value = lat.toFixed(6);
+                    document.getElementById('longitude').value = lng.toFixed(6);
+                }
+            }
+        })({ key: '{{ google_maps_api_key }}', v: 'weekly' });
+      </script>
+</head>
+<body>
+    <h1>AI-Powered Collision Fatality Predictor Using XGBoost</strong> Model </h1>
+    <form action="/result" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+        <!-- INVAGE -->
+        <label for="involved_age">Involved Age:</label>
+        <select id="involved_age" name="involved_age">
+            <option value="0 to 4">0 to 4</option>
+            <option value="5 to 9">5 to 9</option>
+            <option value="10 to 14">10 to 14</option>
+            <option value="15 to 19">15 to 19</option>
+            <option value="20 to 24">20 to 24</option>
+            <option value="25 to 29">25 to 29</option>
+            <option value="30 to 34">30 to 34</option>
+            <option value="35 to 39">35 to 39</option>
+            <option value="40 to 44">40 to 44</option>
+            <option value="45 to 49">45 to 49</option>
+            <option value="50 to 54">50 to 54</option>
+            <option value="55 to 59">55 to 59</option>
+            <option value="60 to 64">60 to 64</option>
+            <option value="65 to 69">65 to 69</option>
+            <option value="70 to 74">70 to 74</option>
+            <option value="75 to 79">75 to 79</option>
+            <option value="80 to 84">80 to 84</option>
+            <option value="85 to 89">85 to 89</option>
+            <option value="90 to 94">90 to 94</option>
+            <option value="Over 95">Over 95</option>
+        </select>
+    </div>
+
+    <!-- WEEKDAY -->
+    <div class="form-group">
+        <label for="weekday">Weekday:</label>
+        <select id="weekday" name="weekday">
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+        </select>
+    </div>
+
+    <!-- ENVIRONMENTAL_CONDITIONS -->
+    <div class="form-group">
+        <label for="environmental_conditions">Environmental Conditions:</label>
+        <select id="environmental_conditions" name="environmental_conditions">
+            <option value="Clear, Daylight">Clear, Daylight</option>
+            <option value="Clear, Dark">Clear, Dark</option>
+            <option value="Clear, Dusk">Clear, Dust</option>
+            <option value="Rain, Daylight">Rain, Daylight</option>
+            <option value="Other, Daylight">Other, Daylight</option>
+            <option value="Snow, Dark, artificial">Snow, Dark, artificial</option>
+            <option value="Other, Dark, artificial">Other, Dark, artificial</option>
+            <option value="Rain, Dark">Rain, Dark</option>
+            <option value="Clear, Dark, artificial">Clear, Dark, artificial</option>
+            <option value="Snow, Daylight">Snow, Daylight</option>
+            <option value="Snow, Dark">Snow, Dark</option>
+            <option value="Clear, Dusk, artificial">Clear, Dusk, artificial</option>
+            <option value="Clear, Dawn, artificial">Clear, Dawn, artificial</option>
+            <option value="Strong wind, Daylight">Strong wind, Daylight</option>
+            <option value="Clear, Dawn">Clear, Dawn</option>
+            <option value="Fog, Mist, Smoke, Dust, Daylight">Fog, Mist, Smoke, Dust, Daylight</option>
+            <option value="Drifting Snow, Dark">Drifting Snow, Dark</option>
+            <option value="Rain, Dusk">Rain, Dusk</option>
+            <option value="Fog, Mist, Smoke, Dust, Dark">Fog, Mist, Smoke, Dust, Dark</option>
+            <option value="Freezing Rain, Dark">Freezing Rain, Dark</option>
+            <option value="Other, Dark">Other, Dark</option>
+            <option value="Snow, Dusk, artificial">Snow, Dusk, artificial</option>
+            <option value="Rain, Dawn">Rain, Dawn</option>
+            <option value="Clear, Daylight, artificial">Clear, Daylight, artificial</option>
+            <option value="Freezing Rain, Daylight">Freezing Rain, Daylight</option>
+            <option value="Rain, Dawn, artificial">Rain, Dawn, artificial</option>
+            <option value="Drifting Snow, Daylight">Drifting Snow, Daylight</option>
+            <option value="Rain, Dark, artificial">Rain, Dark, artificial</option>
+            <option value="Drifting Snow, Dusk, artificial">Drifting Snow, Dusk, artificial</option>
+            <option value="Rain, Dusk, artificial">Other, Daylight, artificial</option>
+            <option value="Drifting Snow, Dark, artificial">Drifting Snow, Dark, artificial</option>
+            <option value="Fog, Mist, Smoke, Dust, Dark, artificial">Fog, Mist, Smoke, Dust, Dark, artificial</option>
+            <option value="Freezing Rain, Dark, artificial">Freezing Rain, Dark, artificial</option>
+            <option value="Rain, Daylight, artificial">Rain, Daylight, artificial</option>
+            <option value="Strong wind, Dark">Strong wind, Dark</option>
+            <option value="Drifting Snow, Dusk">Drifting Snow, Dusk</option>
+            <option value="Strong wind, Dark, artificial">Strong wind, Dark, artificial</option>
+        </select>
+    </div>
+
+    <!-- ROAD_CONDITIONS -->
+    <div class="form-group">
+        <label for="road_conditions">Road Conditions:</label>
+        <select id="road_conditions" name="road_conditions">
+            <option value="Traffic Signal, Dry">Traffic Signal, Dry</option>
+            <option value="No Control, Wet">No Control, Wet</option>
+            <option value="No Control, Dry">No Control, Dry</option>
+            <option value="Stop Sign, Dry">Stop Sign, Dry</option>
+            <option value="Stop Sign, Wet">Stop Sign, Wet</option>
+            <option value="Traffic Signal, Other">Traffic Signal, Other</option>
+            <option value="No Control, Slush">No Control, Slush</option>
+            <option value="Traffic Signal, Wet">Traffic Signal, Wet</option>
+            <option value="Pedestrian Crossover, Dry">Pedestrian Crossover, Dry</option>
+            <option value="No Control, Loose Snow">No Control, Loose Snow</option>
+            <option value="Pedestrian Crossover, Ice">Pedestrian Crossover, Ice</option>
+            <option value="No Control, Other">No Control, Ice</option>
+            <option value="Stop Sign, Other">Stop Sign, Other</option>
+            <option value="Pedestrian Crossover, Wet">Pedestrian Crossover, Wet</option>
+            <option value="Stop Sign, Slush">Stop Sign, Slush</option>
+            <option value="Traffic Controller, Dry">Traffic Controller, Dry</option>
+            <option value="No Control, Ice">No Control, Ice</option>
+            <option value="Traffic Signal, Loose Snow">Traffic Signal, Loose Snow</option>
+            <option value="No Control, Packed Snow">No Control, Packed Snow</option>
+            <option value="Yield Sign, Dry">Yield Sign, Dry</option>
+            <option value="Stop Sign, Packed Snow">Stop Sign, Packed Snow</option>
+            <option value="Traffic Controller, Other">Traffic Controller, Other</option>
+            <option value="Stop Sign, Ice">Stop Sign, Ice</option>
+            <option value="School Guard, Dry">School Guard, Dry</option>
+            <option value="Police Control, Dry">Police Control, Dry</option>
+            <option value="Traffic Gate, Dry">Traffic Gate, Dry</option>
+            <option value="School Guard, WetTraffic Controller, Wet">Traffic Controller, Wet</option>
+            <option value="Pedestrian Crossover, Other">Pedestrian Crossover, Other</option>
+            <option value="Traffic Signal, Ice">Traffic Signal, Ice</option>
+            <option value="Yield Sign, Wet">Yield Sign, Wet</option>
+            <option value="Streetcar (Stop for), Dry">Streetcar (Stop for), Dry</option>
+            <option value="No Control, Spilled liquid">No Control, Spilled liquid</option>
+            <option value="Traffic Signal, Packed Snow">Traffic Signal, Packed Snow</option>
+            <option value="No Control, Loose Sand or Gravel">No Control, Loose Sand or Gravel</option>
+            <option value="Stop Sign, Loose Snow">Stop Sign, Loose Snow</option>
+            <option value="Streetcar (Stop for), Wet">Streetcar (Stop for), Wet</option>
+            <option value="Pedestrian Crossover, Loose Snow">Pedestrian Crossover, Loose Snow</option>
+            <option value="Traffic Signal, Loose Sand or Gravel">Traffic Signal, Loose Sand or Gravel</option>
+        </select>
+    </div>
+
+           <!-- PARTIES_INVOLVED -->
+           <div class="form-group">
+           <label for="parties_involved">Parties Involved:</label>
+           <select id="parties_involved" name="parties_involved">
+               <option value="PEDESTRIAN, AUTOMOBILE">Pedestrian, automobile</option>
+               <option value="AUTOMOBILE, MOTORCYCLE">Automobile, motorcycle</option>
+               <option value="AUTOMOBILE, PASSENGER">Automobile, passenger</option>
+               <option value="CYCLIST, AUTOMOBILE">Cyclist, automobile</option>
+               <option value="PEDESTRIAN, TRSN_CITY_VEH">Pedestrian, traffic city vehicle</option>
+               <option value="AUTOMOBILE, TRUCK, PASSENGER">Automobile, truck, passenger</option>
+               <option value="AUTOMOBILE, TRUCK">Automobile, truck</option>
+               <option value="PEDESTRIAN">Pedestrian</option>
+               <option value="MOTORCYCLE, PASSENGER">Motorcycle, passenger</option>
+               <option value="AUTOMOBILE">auto</option>
+               <option value="PEDESTRIAN, AUTOMOBILE, PASSENGER">Pedestrian, automobile, passenger</option>
+               <option value="CYCLIST, TRSN_CITY_VEH">Cyclist, traffic city vehicle</option>    
+               <option value="CYCLIST, TRUCK'">Cyclist, truck</option>
+               <option value="MOTORCYCLE">Motorcycle</option>
+               <option value="PEDESTRIAN, CYCLIST">Pedestrian, cyclist</option>
+               <option value="CYCLIST">Cyclist</option>
+               <option value="AUTOMOBILE, TRSN_CITY_VEH, PASSENGER">Automobile, traffic city vehicle, passenger</option>
+               <option value="AUTOMOBILE, MOTORCYCLE, PASSENGER">Automobile, motorcycle, passenger</option>
+               <option value="CYCLIST, AUTOMOBILE, PASSENGER">Cyclist, automobile, passenger</option>
+               <option value="AUTOMOBILE, TRSN_CITY_VEH">Automobile, traffic city vehicle</option>
+               <option value="PEDESTRIAN, TRSN_CITY_VEH, PASSENGER">Pedestrian, traffic city vehicle, passenger</option>
+               <option value="PEDESTRIAN, TRUCK">Pedestrian, truck</option>
+               <option value="CYCLIST, AUTOMOBILE, PASSENGER">Cyclist, automobile, passenger</option>
+               <option value="PEDESTRIAN, PASSENGER">Pedestrian, passenger</option>
+               <option value="TRUCK">Truck</option>
+               <option value="PEDESTRIAN, AUTOMOBILE, TRUCK">Pedestrian, automobile, truck</option>
+               <option value="PEDESTRIAN, AUTOMOBILE, TRSN_CITY_VEH">Pedestrian, automobile, traffic city vehicle</option>
+               <option value="PASSENGER">Passenger</option>
+               <option value="PEDESTRIAN, AUTOMOBILE, TRUCK, PASSENGER">Pedestrian, automobile, motorcycle</option>
+               <option value="CYCLIST, AUTOMOBILE, TRUCK">Cyclist, automobile, truck</option>
+               <option value="CYCLIST, AUTOMOBILE, TRSN_CITY_VEH">Cyclist, automobile, traffic city vehicle</option>
+               <option value="CYCLIST, AUTOMOBILE, EMERG_VEH">Cyclist, automobile, emergency vehicle</option>
+               <option value="PEDESTRIAN, MOTORCYCLE">Pedestrian, motorcycle</option>
+               <option value="TRSN_CITY_VEH, PASSENGER">Traffic city vehicle, passenger</option>
+               <option value="MOTORCYCLE, TRUCK, PASSENGER">Motorcycle, truck, passenger</option>
+               <option value="MOTORCYCLE, TRUCK">Motorcycle, truck</option>
+               <option value="PEDESTRIAN, AUTOMOBILE, MOTORCYCLE">Pedestrian, automobile, motorcycle</option>
+               <option value="AUTOMOBILE, TRUCK, TRSN_CITY_VEH, PASSENGER">Automobile, truck, traffic city vehicle, passenger</option>
+               <option value="PEDESTRIAN, TRUCK, PASSENGER">Pedestrian, truck, passenger</option>
+               <option value="MOTORCYCLE, TRSN_CITY_VEH">Motorcycle, traffic city vehicle</option>
+               <option value="TRUCK, PASSENGER">Truck, passenger</option>
+               <option value="PEDESTRIAN, CYCLIST, TRSN_CITY_VEH">Pedestrian, cyclist, traffic city vehicle</option>
+               <option value="PEDESTRIAN, TRUCK, TRSN_CITY_VEH, PASSENGER">Pedestrian, truck, traffic city vehicle, passenger</option>
+               <option value="TRUCK, TRSN_CITY_VEH, PASSENGER">Truck, traffic city vehicle, passenger</option>
+               <option value="PEDESTRIAN, AUTOMOBILE, TRSN_CITY_VEH, PASSENGER">Pedestrian, automobile, traffic city vehicle, passenger</option>
+               <option value="PEDESTRIAN, CYCLIST, AUTOMOBILE">Pedestrian, cyclist, automobile</option>
+               <option value="CYCLIST, TRSN_CITY_VEH, PASSENGER">Cyclist, traffic city vehicle, passenger</option>
+               <option value="AUTOMOBILE, MOTORCYCLE, TRUCK">Automobile, motorcycle, truck</option>
+               <option value="TRUCK, TRSN_CITY_VEH">Truck, traffic city vehicle</option>
+               <option value="PEDESTRIAN, EMERG_VEH">Pedestrian, emergency vehicle</option>
+               <option value="AUTOMOBILE, EMERG_VEH, PASSENGER">Automobile, emergency vehicle, passenger</option>
+               <option value="AUTOMOBILE, EMERG_VEH">Automobile, emergency vehicle</option>
+               <option value="CYCLIST, MOTORCYCLE">Cyclist, motorcycle</option>
+               <option value="CYCLIST, EMERG_VEH">Cyclist, emergency vehicle</option>
+            </select>
+        </div>
+
+        <!-- DRIVING_CONDITIONS -->
+        <div class="form-group">
+        <label for="driving_conditions">Driving Conditions:</label>
+        <select id="driving_conditions" name="driving_conditions">
+            <option value="AG_DRIV">Angry Driver</option>
+            <option value="Overtaking, Driving Properly">Overtaking, Driving Properly</option>
+            <option value="AG_DRIV, REDLIGHT, Unknown">Angry Driver, Red Light, Unknown</option>
+            <option value="SPEEDING, AG_DRIV, ALCOHOL">Speeding, Angry Driver, Alcohol</option>
+            <option value="Changing Lanes, Driving Properly">Changing Lanes, Driving Properly</option>
+            <option value="ALCOHOL, Ability Impaired, Alcohol">Alcohol, Ability Impaired, Alcohol</option>
+            <option value="SPEEDING, AG_DRIV, ALCOHOL, Normal">Speeding, Angry Driver, Alcohol, Normal</option>
+            <option value="ALCOHOL">Alcohol</option>
+            <option value="AG_DRIV, ALCOHOL, Ability Impaired, Alcohol Over .08">Angry Driver, Alcohol, Ability Impaired, Alcohol Over .08</option>
+            <option value="AG_DRIV, ALCOHOL">Angry Driver, Alcohol</option>
+            <option value="Normal">Normal</option>
+            <option value="AG_DRIV, Normal">Angry Driver, Normal</option>
+            <option value="Inattentive">Inattentive</option>
+            <option value="SPEEDING, AG_DRIV">Speeding, Angry Driver</option>
+            <option value="SPEEDING, AG_DRIV, Unknown">Speeding, Angry Driver, Unknown</option>
+            <option value="AG_DRIV, REDLIGHT">Angry Driver, Red Light</option>
+            <option value="AG_DRIV, REDLIGHT, Normal">Angry Driver, Red Light, Normal</option>
+            <option value="AG_DRIV, REDLIGHT, Had Been Drinking">Angry Driver, Red Light, Had Been Drinking</option>
+            <option value="AG_DRIV, Had Been Drinking">Angry Driver, Had Been Drinking</option>
+            <option value="AG_DRIV, Inattentive">Angry Driver, Inattentive</option>
+            <option value="SPEEDING, AG_DRIV, Had Been Drinking">Speeding, Angry Driver, Had Been Drinking</option>
+            <option value="SPEEDING, AG_DRIV, REDLIGHT">Speed, Angry Driver, Red Light</option>
+            <option value="SPEEDING, AG_DRIV, REDLIGHT, Inattentive">Speeding, Angry Driver, Red Light, Inattentive</option>
+            <option value="DISABILITY">Disability</option>
+            <option value="DISABILITY, Normal">Disability, Normal</option>
+            <option value="AG_DRIV, DISABILITY, Medical or Physical Disability">Angry Driver, Disability, Medical or Physical Disability</option>
+            <option value="SPEEDING, AG_DRIV, Normal">Speeding, Angry Driver, Normal</option>
+            <option value="SPEEDING, AG_DRIV, ALCOHOL, Ability Impaired, Alcohol Over .08">Speeding, Angry Driver, Alcohol, Ability Impaired, Alcohol Over .08</option>
+            <option value="Fatigue">Fatigue</option>
+            <option value="SPEEDING, AG_DRIV, Fatigue">Speeding, Angry Driver, Fatigue</option>
+            <option value="SPEEDING, AG_DRIV, REDLIGHT, Normal">Speeding, Angry Driver, Red Light, Normal</option>
+            <option value="SPEEDING, AG_DRIV, REDLIGHT, Unknown">Speeding, Angry Driver, Red Light, Unknown</option>
+            <option value="SPEEDING, AG_DRIV, Other">Speeding, Angry Driver, Other</option>
+            <option value="AG_DRIV, REDLIGHT, Inattentive">Angry Driver, Red Light, Inattentive</option>
+            <option value="SPEEDING, AG_DRIV, Inattentive">Speeding, Angry Driver, Inattentive</option>
+            <option value="SPEEDING, AG_DRIV, ALCOHOL, Ability Impaired, Alcohol">Speeding, Angry Driver, Alcohol, Ability Impaired, Alcohol</option>
+            <option value="Had Been Drinking">Had Been Drinking</option>
+            <option value="AG_DRIV, ALCOHOL, Ability Impaired, Alcohol">Angry Driver, Alcohol, Ability Impaired, Alcohol</option>
+            <option value="ALCOHOL, Ability Impaired, Alcohol Over .08">Alcohol, Ability Impaired, Alcohol Over .08</option>
+            <option value="SPEEDING, AG_DRIV, DISABILITY, Medical or Physical Disability">Speeding, Angry Driver, Disability, Medical or Physical Disability</option>
+            <option value="SPEEDING, AG_DRIV, DISABILITY">Speeding, Angry Driver, Disability</option>
+            <option value="Ability Impaired, Drugs">Ability Impaired, Drugs</option>
+            <option value="AG_DRIV, ALCOHOL, Normal">Angry Driver, Alcohol, Normal</option>
+            <option value="ALCOHOL, Normal">Alcohol, Normal</option>
+            <option value="AG_DRIV, Fatigue">Angry Driver, Fatigue</option>
+            <option value="AG_DRIV, REDLIGHT, DISABILITY">Angry Driver, Red Light, Disability</option>
+            <option value="AG_DRIV, REDLIGHT, DISABILITY, Normal">Angry Driver, Red Light, Disability, Normal</option>
+            <option value="AG_DRIV, REDLIGHT, DISABILITY, Medical or Physical Disability">Angry Driver, Red Light, Disability, Medical or Physical Disability</option>
+            <option value="AG_DRIV, ALCOHOL, Unknown">Angry Driver, Alcohol, Unknown</option>
+            <option value="AG_DRIV, DISABILITY, Medical or Physical Disability">Angry Driver, Disability, Medical or Physical Disability</option>
+            <option value="AG_DRIV, DISABILITY">Angry Driver, Disability</option>
+            <option value="SPEEDING, AG_DRIV, REDLIGHT, ALCOHOL">Speeding, Angry Driver, Red Light, Alcohol</option>
+            <option value="SPEEDING, AG_DRIV, REDLIGHT, ALCOHOL, Ability Impaired, Alcohol">Speeding, Angry Driver, Red Light, Alcohol, Ability Impaired, Alcohol</option>
+            <option value="SPEEDING, AG_DRIV, REDLIGHT, ALCOHOL, Normal">Speeding, Angry Driver, Red Light, Alcohol, Normal</option>
+            <option value="SPEEDING, AG_DRIV, DISABILITY, Normal">Speeding, Angry Driver, Disability, Normal</option>
+            <option value="AG_DRIV, DISABILITY, Normal">Angry Driver, Disability, Normal</option>
+            <option value="AG_DRIV, REDLIGHT, ALCOHOL">Angry Driver, Red Light, Alcohol</option>
+            <option value="AG_DRIV, REDLIGHT, ALCOHOL, Normal">Angry Driver, Red Light, Alcohol, Normal</option>
+            <option value="AG_DRIV, REDLIGHT, ALCOHOL, Ability Impaired, Alcohol Over .08">Angry Driver, Red Light, Alcohol, Ability Impaired, Alcohol Over .08</option>
+            <option value="AG_DRIV, REDLIGHT, ALCOHOL, Ability Impaired, Alcohol">Angry Driver, Red Light, Alcohol, Ability Impaired, Alcohol</option>
+            <option value="SPEEDING, AG_DRIV, REDLIGHT, Ability Impaired, Drugs">Speeding, Angry Driver, Red Light, Ability Impaired, Drugs</option>
+            <option value="SPEEDING, AG_DRIV, ALCOHOL, Inattentive">Speeding, Angry Driver, Alcohol, Inattentive</option>
+            <option value="SPEEDING, AG_DRIV, REDLIGHT, Had Been Drinking">Speeding, Angry Driver, Red Light, Had Been Drinking</option>
+            <option value="AG_DRIV, REDLIGHT, ALCOHOL, Unknown">Angry Driver, Red Light, Alcohol, Unknown</option>
+            <option value="SPEEDING, AG_DRIV, Ability Impaired, Drugs">Speeding, Angry Driver, Ability Impaired, Drugs</option>
+            <option value="SPEEDING, AG_DRIV, REDLIGHT, ALCOHOL, Ability Impaired, Alcohol Over .08">Speeding, Angry Driver, Red Light, Alcohol, Ability Impaired, Alcohol Over .08</option>
+            <option value="AG_DRIV, ALCOHOL, Had Been Drinking">Angry Driver, Alcohol, Had Been Drinking</option>
+            <option value="SPEEDING, AG_DRIV, REDLIGHT, DISABILITY, Normal">Speeding, Angry Driver, Red Light, Disability, Normal</option>
+            <option value="SPEEDING, AG_DRIV, REDLIGHT, DISABILITY, Medical or Physical Disability">Speeding, Angry Driver, Red Light, Disability, Medical or Physical Disability</option>
+        </select>
+    </div>
+
+        <!-- LATITUDE AND LONGITUDE -->
+        <div style="width: 100%; margin-top: 20px;">
+        <label for="Latitude_Longitude" style="margin-left: 1%;">Click on the map to choose a location:</label>
+        <div id="map" style="height: 400px;"></div>
+    </div>
+
+    <div class="form-group">
+        <label for="latitude">Latitude:</label>
+        <input type="text" id="latitude" name="latitude" style="width: 40%; height: 2%; margin-left: 0%; background-color: #f7f7f4; border: 1px solid #ccc; padding: 10px; margin-top: 0%;">
+    </div>
+
+    <div class="form-group">
+        <label for="longitude">Longitude:</label>
+        <input type="text" id="longitude" name="longitude" style="width: 40%; height: 2%; margin-left: 0%; background-color: #f7f7f4; border: 1px solid #ccc; padding: 10px; margin-top: 0%;">
+    </div>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <label for="model_file">Select a Prediction Model:</label>
+            <input type="file" id="model_file" name="model_file" accept=".pkl">
+        </div>
+
+        <!-- Submit button -->
+        <div style="width: 80%; display: flex; justify-content: center;">
+        <button type="submit">Predict</button>
+    </div>
+    </form>
+    <script>
+        document.getElementById('model_file').addEventListener('change', function() {
+            var fileName = this.files[0].name;
+            // Extract the model name based on the new filename format 
+            var modelName = fileName.split('_')[0];
+            modelName = modelName.split(/(?=[A-Z])/).join(" "); 
+            modelName = modelName.charAt(0).toUpperCase() + modelName.slice(1).toLowerCase(); 
+            // Update the page title
+            document.querySelector('h1').textContent = `AI-Powered Collision Fatality Predictor Using ${modelName} Model`;
+        });
+    </script>
+    <footer style="background-color: #032146; color: #c8c1c1; text-align: center; margin-top: 30px;">
+        <img src="/static/logo-police.png" alt="Company Logo" style="width: 80px; height: 80px;">
+        <p style="font-size: 13px;">Depeloped by Rodolfo Borbon</p>
+        <p style="font-size: 13px;">Supervised Learning-401</p>
+        <p style="font-size: 10px;">Dataset Source: <a href="https://data.torontopolice.on.ca/datasets/TorontoPS::ksi/about" style="color: #c8c1c1;">Toronto Police Service</a></p>
+    </footer>
+</body>
+</html>
