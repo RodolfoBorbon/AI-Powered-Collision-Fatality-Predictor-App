@@ -16,6 +16,9 @@ This Flask-based web application allows users to predict whether a traffic colli
 
 The application uses trained machine learning models that can be uploaded by the user.
 
+![Main Page Overview](./assets/main.png)
+![Results Page Overview](./assets/results.png)
+
 ## Features
 
 - Interactive web interface for data input
